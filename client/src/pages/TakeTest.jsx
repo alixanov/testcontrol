@@ -28,6 +28,7 @@ export default function TakeTest({ testCode, onGoHome }) {
   const [startedAt, setStartedAt] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmSubmitOpen, setConfirmSubmitOpen] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   // Results phase
   const [result, setResult] = useState(null);
@@ -102,10 +103,20 @@ export default function TakeTest({ testCode, onGoHome }) {
     setConfirmSubmitOpen(false);
 
     try {
+      const finalName = studentName.trim() || 'Foydalanuvchi';
+      const durationSec = startedAt
+        ? Math.max(1, Math.floor((Date.now() - new Date(startedAt).getTime()) / 1000))
+        : 0;
+
       const submissionData = {
-        student_name: studentName.trim(),
+        student_name: finalName,
+        studentName: finalName,
         student_group: studentGroup.trim(),
+        studentGroup: studentGroup.trim(),
         started_at: startedAt || new Date().toISOString(),
+        startedAt: startedAt || new Date().toISOString(),
+        duration_seconds: durationSec,
+        durationSeconds: durationSec,
         answers: Object.entries(answers).map(([questionId, ansVal]) => {
           if (Array.isArray(ansVal)) {
             return {
@@ -137,7 +148,7 @@ export default function TakeTest({ testCode, onGoHome }) {
         });
       }
     } catch (err) {
-      alert(err.message || t('common.error'));
+      setSubmitError(err.message || t('common.error'));
     } finally {
       setIsSubmitting(false);
     }
@@ -939,6 +950,30 @@ export default function TakeTest({ testCode, onGoHome }) {
                 {isSubmitting ? t('common.loading') : t('takeTest.confirm_yes')}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Submit Error Dialog */}
+      {submitError && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/70 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white dark:bg-[#131936] rounded-2xl max-w-md w-full p-6 shadow-2xl border border-rose-200 dark:border-rose-900/60 text-slate-800 dark:text-slate-100 transition-colors">
+            <div className="w-12 h-12 rounded-xl bg-rose-50 dark:bg-rose-950/80 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800 flex items-center justify-center mx-auto mb-4">
+              <AlertCircle className="w-6 h-6" />
+            </div>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white text-center mb-2">
+              {t('common.error')}
+            </h3>
+            <p className="text-sm text-slate-600 dark:text-slate-300 text-center mb-6 leading-relaxed">
+              {submitError}
+            </p>
+            <button
+              type="button"
+              onClick={() => setSubmitError('')}
+              className="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 dark:bg-[#25366f] dark:hover:bg-[#2f438a] text-white font-semibold text-sm rounded-xl border border-indigo-500 dark:border-[#3c55a6] shadow-md transition-all"
+            >
+              OK
+            </button>
           </div>
         </div>
       )}

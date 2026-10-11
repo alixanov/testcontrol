@@ -72,10 +72,16 @@ router.get('/tests/:code', (req, res) => {
 // POST /api/public/tests/:code/submit - Grade and save test attempt
 router.post('/tests/:code/submit', (req, res) => {
   const { code } = req.params;
-  const { studentName, studentGroup, answers, durationSeconds, startedAt } = req.body;
+  const studentName = (req.body.student_name || req.body.studentName || '').trim();
+  const studentGroup = (req.body.student_group || req.body.studentGroup || '').trim();
+  const startedAt = req.body.started_at || req.body.startedAt || new Date().toISOString();
+  const durationSeconds = Number(req.body.duration_seconds ?? req.body.durationSeconds ?? 0);
+  const rawAnswers = req.body.answers;
 
-  if (!studentName || !studentName.trim()) {
-    return res.status(400).json({ error: 'Пожалуйста, укажите имя и фамилию' });
+  if (!studentName) {
+    return res.status(400).json({ 
+      error: 'Iltimos, ism va familiyangizni kiriting / Пожалуйста, укажите имя и фамилию' 
+    });
   }
 
   const test = db.prepare('SELECT * FROM tests WHERE access_code = ?').get(code);
@@ -84,6 +90,26 @@ router.post('/tests/:code/submit', (req, res) => {
   }
   if (!test.is_active) {
     return res.status(403).json({ error: 'Прием ответов по данному тесту завершен' });
+  }
+
+  // Normalize answers into a lookup map: { [questionId]: value }
+  const answersMap = {};
+  if (Array.isArray(rawAnswers)) {
+    for (const item of rawAnswers) {
+      if (!item) continue;
+      const qId = item.question_id || item.questionId;
+      if (qId !== undefined) {
+        if (item.selected_option_ids !== undefined) {
+          answersMap[qId] = item.selected_option_ids;
+        } else if (item.text_answer !== undefined) {
+          answersMap[qId] = item.text_answer;
+        } else if (item.value !== undefined) {
+          answersMap[qId] = item.value;
+        }
+      }
+    }
+  } else if (rawAnswers && typeof rawAnswers === 'object') {
+    Object.assign(answersMap, rawAnswers);
   }
 
   const questions = db.prepare('SELECT * FROM questions WHERE test_id = ? ORDER BY order_num ASC, id ASC').all(test.id);
@@ -95,7 +121,7 @@ router.post('/tests/:code/submit', (req, res) => {
   for (const q of questions) {
     maxScore += q.points;
     const allOptions = db.prepare('SELECT * FROM options WHERE question_id = ?').all(q.id);
-    const userAnswer = answers ? answers[q.id] : null;
+    const userAnswer = answersMap[q.id];
 
     let isCorrect = false;
     let pointsAwarded = 0;
@@ -103,7 +129,7 @@ router.post('/tests/:code/submit', (req, res) => {
     let textAnswer = null;
 
     if (q.question_type === 'single') {
-      const selectedId = Number(userAnswer);
+      const selectedId = Array.isArray(userAnswer) ? Number(userAnswer[0]) : Number(userAnswer);
       selectedOptionIds = selectedId ? [selectedId] : [];
       const correctOption = allOptions.find(o => o.is_correct === 1);
       if (correctOption && selectedId === correctOption.id) {
@@ -111,7 +137,9 @@ router.post('/tests/:code/submit', (req, res) => {
         pointsAwarded = q.points;
       }
     } else if (q.question_type === 'multiple') {
-      const selectedIds = Array.isArray(userAnswer) ? userAnswer.map(Number) : [];
+      const selectedIds = Array.isArray(userAnswer)
+        ? userAnswer.map(Number)
+        : (userAnswer !== undefined && userAnswer !== null ? [Number(userAnswer)] : []);
       selectedOptionIds = selectedIds;
       const correctOptionIds = allOptions.filter(o => o.is_correct === 1).map(o => o.id);
 
@@ -123,7 +151,7 @@ router.post('/tests/:code/submit', (req, res) => {
         pointsAwarded = q.points;
       }
     } else if (q.question_type === 'text') {
-      textAnswer = (userAnswer || '').trim();
+      textAnswer = (typeof userAnswer === 'string' ? userAnswer : String(userAnswer || '')).trim();
       const validAnswers = allOptions.map(o => o.option_text.trim().toLowerCase());
       if (textAnswer && validAnswers.includes(textAnswer.toLowerCase())) {
         isCorrect = true;
@@ -162,14 +190,14 @@ router.post('/tests/:code/submit', (req, res) => {
 
   const attemptResult = insertAttempt.run(
     test.id,
-    studentName.trim(),
-    (studentGroup || '').trim(),
+    studentName,
+    studentGroup,
     totalScore,
     maxScore,
     percentage,
     passed,
-    startedAt || new Date().toISOString(),
-    Number(durationSeconds) || 0
+    startedAt,
+    durationSeconds
   );
 
   const attemptId = attemptResult.lastInsertRowid;
