@@ -3,12 +3,38 @@ const path = require('path');
 const fs = require('fs');
 const bcrypt = require('bcryptjs');
 
-const dataDir = path.resolve(__dirname, '../data');
-if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
+const isVercel = process.env.VERCEL === '1' || process.env.VERCEL === 'true' || !!process.env.VERCEL;
+const seedFile = path.resolve(__dirname, '../data/seed.sqlite');
+
+let dbPath;
+
+if (isVercel) {
+  const dataDir = '/tmp';
+  dbPath = path.join(dataDir, 'database.sqlite');
+  if (!fs.existsSync(dbPath) && fs.existsSync(seedFile)) {
+    try {
+      fs.copyFileSync(seedFile, dbPath);
+      console.log('Copied seed.sqlite to /tmp/database.sqlite');
+    } catch (e) {
+      console.error('Failed to copy seed database in Vercel:', e);
+    }
+  }
+} else {
+  const dataDir = path.resolve(__dirname, '../data');
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+  }
+  dbPath = path.join(dataDir, 'database.sqlite');
+  if (!fs.existsSync(dbPath) && fs.existsSync(seedFile)) {
+    try {
+      fs.copyFileSync(seedFile, dbPath);
+      console.log('Initialized database from seed.sqlite');
+    } catch (e) {
+      console.error('Failed to copy seed database:', e);
+    }
+  }
 }
 
-const dbPath = path.join(dataDir, 'database.sqlite');
 const db = new DatabaseSync(dbPath);
 
 // Enable foreign keys

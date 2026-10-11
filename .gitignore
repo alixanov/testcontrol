@@ -7,12 +7,11 @@ server/node_modules/
 client/dist/
 
 # SQLite database files & runtime data
-*.sqlite
 *.sqlite-journal
 *.sqlite-shm
 *.sqlite-wal
-data/
-server/data/
+server/data/database.sqlite
+!server/data/seed.sqlite
 
 # Environment variables & secrets
 .env
