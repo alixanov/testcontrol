@@ -18,25 +18,20 @@ app.use((req, res, next) => {
   const start = Date.now();
   res.on('finish', () => {
     const duration = Date.now() - start;
-    if (req.originalUrl.startsWith('/api') || req.originalUrl.startsWith('/auth') || req.originalUrl.startsWith('/admin') || req.originalUrl.startsWith('/public')) {
+    if (req.originalUrl.startsWith('/api')) {
       console.log(`[API] ${req.method} ${req.originalUrl} ${res.statusCode} - ${duration}ms`);
     }
   });
   next();
 });
 
-// API Routes (support both /api/ prefix and bare paths for serverless rewrites)
+// API Routes
 app.use('/api/auth', authRoutes);
-app.use('/auth', authRoutes);
-
 app.use('/api/admin', adminRoutes);
-app.use('/admin', adminRoutes);
-
 app.use('/api/public', publicRoutes);
-app.use('/public', publicRoutes);
 
 // Health check
-app.get(['/api/health', '/health'], (req, res) => {
+app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 

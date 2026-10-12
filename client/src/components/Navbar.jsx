@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   Award, ShieldCheck, LogOut, KeyRound, Home, 
-  LayoutDashboard, PlusCircle, Sun, Moon, Menu, X 
+  LayoutDashboard, Sun, Moon, Menu, X 
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
@@ -65,14 +65,6 @@ export default function Navbar({
                 >
                   <LayoutDashboard className="w-4 h-4" />
                   <span>{t('navbar.tests')}</span>
-                </button>
-
-                <button
-                  onClick={onOpenNewTestModal}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-[#131936] hover:bg-[#1e2a54] dark:bg-[#25366f] dark:hover:bg-[#2f438a] text-white text-sm font-medium rounded-xl border border-[#131936] dark:border-[#3c55a6] shadow-xs transition-all active:scale-[0.98]"
-                >
-                  <PlusCircle className="w-4 h-4" />
-                  <span>{t('navbar.create_test')}</span>
                 </button>
 
                 <div className="h-5 w-px bg-slate-200 dark:bg-[#1f2c58] mx-1"></div>
@@ -262,15 +254,6 @@ export default function Navbar({
         <div className="md:hidden border-t border-slate-200 dark:border-[#1c2752] bg-white dark:bg-[#0e142c] px-4 py-3 shadow-xl space-y-2 animate-in slide-in-from-top-2 duration-150">
           {admin ? (
             <div className="space-y-1.5">
-              {/* Primary action */}
-              <button
-                onClick={() => handleNavClick(onOpenNewTestModal)}
-                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[#131936] dark:bg-[#25366f] text-white text-sm font-semibold rounded-xl shadow-xs"
-              >
-                <PlusCircle className="w-4 h-4" />
-                <span>{t('navbar.create_test')}</span>
-              </button>
-
               <button
                 onClick={() => handleNavClick('admin-dashboard')}
                 className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors ${

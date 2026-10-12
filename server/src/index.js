@@ -19,7 +19,7 @@ app.use(express.static(clientDist, {
 
 // SPA fallback for non-API routes
 app.get('*', (req, res, next) => {
-  if (req.originalUrl.startsWith('/api') || req.originalUrl.startsWith('/auth') || req.originalUrl.startsWith('/admin') || req.originalUrl.startsWith('/public')) {
+  if (req.originalUrl.startsWith('/api')) {
     return next();
   }
   res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
