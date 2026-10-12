@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { ShieldCheck, Lock, User, ArrowRight, Info } from 'lucide-react';
+import { ShieldCheck, Lock, User, ArrowRight } from 'lucide-react';
 import { api } from '../services/api';
 import { useApp } from '../context/AppContext';
 
 export default function AdminLogin({ onLoginSuccess, onGoHome }) {
   const { t } = useApp();
-  const [username, setUsername] = useState('admin');
-  const [password, setPassword] = useState('admin123');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -38,17 +38,6 @@ export default function AdminLogin({ onLoginSuccess, onGoHome }) {
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             {t('adminLogin.subtitle')}
           </p>
-        </div>
-
-        {/* Demo credentials hint */}
-        <div className="mb-5 p-3 bg-[#131936]/5 dark:bg-[#0e142c] border border-[#131936]/15 dark:border-[#28386e] rounded-xl flex items-start gap-2.5 text-xs text-slate-800 dark:text-indigo-200">
-          <Info className="w-4 h-4 text-[#131936] dark:text-[#8fa7ff] flex-shrink-0 mt-0.5" />
-          <div className="min-w-0 flex-1">
-            <span className="font-semibold text-slate-900 dark:text-white">{t('adminLogin.demo_info_title')}</span>
-            <div className="font-mono mt-0.5 text-slate-700 dark:text-slate-300 truncate">
-              login: <strong className="text-[#131936] dark:text-[#8fa7ff]">admin</strong> &nbsp;|&nbsp; parol: <strong className="text-[#131936] dark:text-[#8fa7ff]">admin123</strong>
-            </div>
-          </div>
         </div>
 
         {error && (

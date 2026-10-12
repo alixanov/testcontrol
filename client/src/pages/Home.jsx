@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowRight, Sparkles, CheckCircle2, Clock, Zap, ShieldCheck } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Clock, Zap, ShieldCheck } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
 export default function Home({ onStartTestByCode, onGoAdminLogin }) {
@@ -20,11 +20,6 @@ export default function Home({ onStartTestByCode, onGoAdminLogin }) {
         
         {/* Left column: Hero presentation & dense feature pills */}
         <div className="lg:col-span-7 space-y-4 sm:space-y-5 text-center lg:text-left">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#131936]/10 dark:bg-[#131936] border border-[#131936]/20 dark:border-[#2b3e7a] text-[#131936] dark:text-[#8fa7ff] text-xs font-semibold uppercase tracking-wider shadow-xs">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>{t('home.badge')}</span>
-          </div>
 
           {/* Headline */}
           <h1 className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight sm:leading-[1.15]">
