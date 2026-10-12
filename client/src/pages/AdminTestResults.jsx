@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   ArrowLeft, Download, Search, Users, CheckCircle, XCircle, 
-  Trash2, Eye, BarChart2, Award, Clock, Filter 
+  Trash2, Eye, Award, Clock, Filter 
 } from 'lucide-react';
 import { api } from '../services/api';
 import { useApp } from '../context/AppContext';
@@ -183,56 +183,6 @@ export default function AdminTestResults({ testId, onBack, onViewAttempt }) {
           </div>
         </div>
       </div>
-
-      {/* Item Analysis (Questions Difficulty) */}
-      {questionStats && questionStats.length > 0 && (
-        <div className="bg-white dark:bg-[#131936] rounded-2xl border border-slate-200 dark:border-[#243365] p-5 sm:p-6 shadow-xs dark:shadow-xl space-y-4 transition-colors">
-          <div className="flex items-center gap-2 pb-2 border-b border-slate-100 dark:border-[#1f2b56]">
-            <BarChart2 className="w-5 h-5 text-[#131936] dark:text-[#8fa7ff]" />
-            <h3 className="font-bold text-slate-900 dark:text-white text-base">
-              {t('adminResults.item_analysis_title')}
-            </h3>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {questionStats.map((qs, i) => (
-              <div 
-                key={qs.question_id} 
-                className="p-3.5 rounded-xl bg-slate-50 dark:bg-[#0c1023] border border-slate-200 dark:border-[#243365] space-y-2 transition-colors"
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-md bg-[#131936]/10 dark:bg-[#182348] text-[#131936] dark:text-[#8fa7ff] font-bold text-xs flex items-center justify-center flex-shrink-0">
-                      {i + 1}
-                    </span>
-                    <span className="text-xs font-semibold text-slate-800 dark:text-white line-clamp-1">
-                      {qs.question_text}
-                    </span>
-                  </div>
-                  <span className={`text-xs font-bold px-2 py-0.5 rounded ${
-                    qs.correct_pct >= 70 
-                      ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300' 
-                      : qs.correct_pct >= 40 
-                        ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300' 
-                        : 'bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300'
-                  }`}>
-                    {qs.correct_pct}% to'g'ri
-                  </span>
-                </div>
-
-                <div className="w-full bg-slate-200 dark:bg-[#1a244b] h-2 rounded-full overflow-hidden">
-                  <div 
-                    className={`h-full transition-all duration-300 ${
-                      qs.correct_pct >= 70 ? 'bg-emerald-500' : qs.correct_pct >= 40 ? 'bg-amber-500' : 'bg-rose-500'
-                    }`}
-                    style={{ width: `${qs.correct_pct}%` }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Participants Table Section */}
       <div className="bg-white dark:bg-[#131936] rounded-2xl border border-slate-200 dark:border-[#243365] shadow-xs dark:shadow-xl overflow-hidden transition-colors">
