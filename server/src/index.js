@@ -41,10 +41,13 @@ app.get('*', (req, res, next) => {
   });
 });
 
+const { startKeepAlive } = require('./keepAlive');
+
 app.listen(PORT, HOST, () => {
   console.log(`===============================================`);
   console.log(`🚀 Сервер онлайн-тестирования запущен!`);
   console.log(`🌐 API доступен по адресу: http://${HOST}:${PORT}`);
   console.log(`🔑 Логин администратора по умолчанию: admin / admin123`);
   console.log(`===============================================`);
+  startKeepAlive();
 });

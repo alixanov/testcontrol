@@ -1,0 +1,17 @@
+name: Keep Render Server Awake
+
+on:
+  schedule:
+    # Runs every 12 minutes to prevent Render free tier 15-minute sleep
+    - cron: '*/12 * * * *'
+  workflow_dispatch:
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Health Endpoint
+        run: |
+          echo "Pinging Render service at $(date)..."
+          response=$(curl -s -o /dev/null -w "%{http_code}" --max-time 45 https://testcontrol-fyzs.onrender.com/api/health)
+          echo "Render response status code: $response"
